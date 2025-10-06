@@ -14,12 +14,13 @@
                 <li class=active><a class="nav-link" href="index.php">General Dashboard</a></li>
               </ul>
             </li>
-            <li class="menu-header">Starter</li>
+            <li class="menu-header">File Management</li>
             <li><a class="nav-link" href="foldersbak.php"><i class="far fa-folder"></i> <span>Folders Page</span></a></li>
             <li class="dropdown">
-              <a href="#" class="nav-link has-dropdown"><i class="fas fa-th"></i> <span>Bootstrap</span></a>
+              <a href="#" class="nav-link has-dropdown"><i class="fas fa-th"></i> <span>Aprrovals/Tables</span></a>
               <ul class="dropdown-menu">
-                <li><a class="nav-link" href="bootstrap-alert.html">Alert</a></li>
+                <li><a class="nav-link" href="bootstrap-alert.html">Approvals</a></li>
+                <li><a class="nav-link" href="bootstrap-alert.html">Tables</a></li>
               </ul>
             </li>
             

@@ -40,7 +40,7 @@ if (isset($_POST['login'])) {
             $_SESSION['email'] = $rows_admin['email'];
             $_SESSION['user_type'] = 'admin';
 
-            header('Location:Admin/index.php');
+            header('Location:SubAdmin_ACCT/index.php');
             exit();
         } else {
             // Check in Customer table
