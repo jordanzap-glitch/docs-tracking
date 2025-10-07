@@ -1,3 +1,6 @@
+<?php
+include 'assets/includes/db/dbcon.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -64,5 +67,8 @@
   <!-- Template JS File -->
   <script src="assets/js/scripts.js"></script>
   <script src="assets/js/custom.js"></script>
+
+  <?php include '../assets/includes/sysadmin/scripts.php'; ?>
+  
 </body>
 </html>

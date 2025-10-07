@@ -121,9 +121,9 @@
               <div class="col-md-4 col-lg-4 mb-4">
                 <div class="card card-primary">
                   <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4>Folder 1</h4>
+                    <h4>Accounting Department</h4>
                     <div class="button-wrapper">
-                      <button class="shine-button button-emerald">Open</button>
+                      <a href="upload_acct.php" class="shine-button button-emerald">Open</a>
                     </div>
                   </div>
                   <div class="card-body folder-body">
@@ -132,6 +132,7 @@
                   </div>
                 </div>
               </div>
+
               <!-- Folder 2 -->
               <div class="col-md-4 col-lg-4 mb-4">
                 <div class="card card-primary">
