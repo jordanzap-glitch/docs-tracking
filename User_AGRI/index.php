@@ -67,7 +67,7 @@ include '../assets/includes/db/dbcon.php';
       <div class="main-content">
         <section class="section">
           <div class="section-header">
-            <h1>Department of Agriculture</h1>
+            <h1>Department of Agriculture Employee</h1>
           </div>
 
           <div class="section-body">
@@ -111,15 +111,17 @@ include '../assets/includes/db/dbcon.php';
                         <tr>
                           <th>File Name</th>
                           <th>Uploaded By</th>
+                          <th>Department</th>
                           <th>Date Uploaded</th>
                           <th>Status</th>
                           <th>Action</th>
                         </tr>
                       </thead>
                       <tbody id="fileList">
-                        <tr><td colspan="5" class="text-center text-muted">No folder selected.</td></tr>
+                        <tr><td colspan="6" class="text-center text-muted">No folder selected.</td></tr>
                       </tbody>
                     </table>
+
                   </div>
                 </div>
               </div>
