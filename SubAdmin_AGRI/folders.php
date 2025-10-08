@@ -7,11 +7,12 @@ include '../assets/includes/db/dbcon.php';
 <head>
   <meta charset="UTF-8">
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
-  <title>Department of Agriculture - Folders</title>
+  <title>Folders Page</title>
 
   <!-- General CSS Files -->
   <link rel="stylesheet" href="../assets/modules/bootstrap/css/bootstrap.min.css">
   <link rel="stylesheet" href="../assets/modules/fontawesome/css/all.min.css">
+  <link rel="stylesheet" href="../assets/modules/chocolat/dist/css/chocolat.css">
   <link rel="stylesheet" href="../assets/modules/izitoast/css/iziToast.min.css">
 
   <!-- Template CSS -->
@@ -21,7 +22,7 @@ include '../assets/includes/db/dbcon.php';
   <style>
     .folder-icon { font-size: 45px; color: #ffc107; margin-bottom: 10px; }
     .folder-body { text-align: center; padding: 10px; }
-    .scroll-container-vertical { max-height: 60vh; overflow-y: auto; padding-right: 10px; scrollbar-width: thin; scrollbar-color: #ccc #f1f1f1; }
+    .scroll-container-vertical { max-height: 80vh; overflow-y: auto; padding-right: 10px; scrollbar-width: thin; scrollbar-color: #ccc #f1f1f1; }
     .scroll-container-vertical::-webkit-scrollbar { width: 8px; }
     .scroll-container-vertical::-webkit-scrollbar-thumb { background-color: #ccc; border-radius: 10px; }
     .scroll-container-vertical::-webkit-scrollbar-track { background: #f1f1f1; }
@@ -56,40 +57,46 @@ include '../assets/includes/db/dbcon.php';
   </style>
 </head>
 
-<body class="layout-3">
+<body>
   <div id="app">
-    <div class="main-wrapper container">
+    <div class="main-wrapper main-wrapper-1">
       <div class="navbar-bg"></div>
-      <?php include '../assets/includes/user_agri/navbar1.php'; ?>
-      <?php include '../assets/includes/user_agri/navbar2.php'; ?>
+      <?php include '../assets/includes/sysadmin/navbar.php'; ?>
+      <?php include '../assets/includes/sysadmin/activate/folderactive.php'; ?>
 
-      <!-- Main Content -->
       <div class="main-content">
         <section class="section">
           <div class="section-header">
-            <h1>Department of Agriculture</h1>
+            <h1>Folders</h1>
           </div>
 
           <div class="section-body">
-            <h2 class="section-title">Folders</h2>
-
             <div class="row no-gutters">
-              <!-- Folders Column -->
+              <!-- Folders -->
               <div class="col-lg-3 folders-column">
                 <div class="scroll-container-vertical">
-                  <div class="card card-primary folder-card" data-folder="accounting" data-name="Accounting Dept" data-action="upload_acct.php">
+                  <div class="card card-primary folder-card" data-folder="accounting" data-name="Accounting Department" data-action="upload_acct.php">
                     <div class="folder-dot"></div>
                     <div class="card-header d-flex justify-content-between align-items-center py-2 px-3">
-                      <h6 class="mb-0">Accounting Dept</h6>
+                      <h6 class="mb-0">Accounting Department</h6>
                       <button class="shine-button button-emerald open-folder">Open</button>
                     </div>
                     <div class="card-body folder-body"><i class="fas fa-folder folder-icon"></i></div>
                   </div>
 
-                  <div class="card card-primary folder-card" data-folder="agriculture" data-name="Agriculture Dept" data-action="upload_agri.php">
+                  <div class="card card-primary folder-card" data-folder="agriculture" data-name="Agriculture Department" data-action="upload_agri.php">
                     <div class="folder-dot"></div>
                     <div class="card-header d-flex justify-content-between align-items-center py-2 px-3">
-                      <h6 class="mb-0">Agriculture Dept</h6>
+                      <h6 class="mb-0">Agriculture Department</h6>
+                      <button class="shine-button button-emerald open-folder">Open</button>
+                    </div>
+                    <div class="card-body folder-body"><i class="fas fa-folder folder-icon"></i></div>
+                  </div>
+
+                  <div class="card card-primary folder-card" data-folder="it" data-name="IT Department" data-action="upload_it.php">
+                    <div class="folder-dot"></div>
+                    <div class="card-header d-flex justify-content-between align-items-center py-2 px-3">
+                      <h6 class="mb-0">IT Department</h6>
                       <button class="shine-button button-emerald open-folder">Open</button>
                     </div>
                     <div class="card-body folder-body"><i class="fas fa-folder folder-icon"></i></div>
@@ -123,23 +130,17 @@ include '../assets/includes/db/dbcon.php';
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
         </section>
       </div>
-
-      <?php include '../assets/includes/user_agri/footer.php'; ?>
+      <?php include '../assets/includes/sysadmin/footer.php'; ?>
     </div>
   </div>
 
-  <!-- JS Scripts -->
   <script src="../assets/modules/jquery.min.js"></script>
-  <script src="../assets/modules/popper.js"></script>
-  <script src="../assets/modules/tooltip.js"></script>
   <script src="../assets/modules/bootstrap/js/bootstrap.min.js"></script>
   <script src="../assets/modules/nicescroll/jquery.nicescroll.min.js"></script>
-  <script src="../assets/modules/moment.min.js"></script>
   <script src="../assets/js/stisla.js"></script>
   <script src="../assets/js/scripts.js"></script>
   <script src="../assets/js/custom.js"></script>
@@ -184,6 +185,7 @@ include '../assets/includes/db/dbcon.php';
       formData.append('fileUpload', file);
       formData.append('folder_key', activeFolder);
 
+      // Show loading toast
       const loadingToast = iziToast.info({
         title: 'Uploading',
         message: file.name,
@@ -200,23 +202,23 @@ include '../assets/includes/db/dbcon.php';
         contentType: false,
         processData: false,
         success: function(resp) {
-          iziToast.destroy();
+          iziToast.destroy(); // remove loading toast
           if (resp.success) {
             iziToast.success({ title: 'Success', message: resp.message, position: 'bottomRight' });
             loadFiles(activeFolder);
-            hiddenFileInput.value = '';
+            hiddenFileInput.value = ''; // reset input
           } else {
             iziToast.error({ title: 'Error', message: resp.message, position: 'bottomRight' });
           }
         },
         error: function() {
-          iziToast.destroy();
+          iziToast.destroy(); // remove loading toast
           iziToast.error({ title: 'Error', message: 'Upload failed (network/server error).', position: 'bottomRight' });
         }
       });
     });
 
-    // Load files dynamically
+    // Load files
     function loadFiles(folderKey) {
       $.ajax({
         url: 'load_files.php',
