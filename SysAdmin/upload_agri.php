@@ -1,26 +1,22 @@
 <?php
-// upload_acct.php
 session_start();
 header('Content-Type: application/json; charset=utf-8');
 include '../assets/includes/db/dbcon.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-  echo json_encode(['success'=>false, 'message'=>'Invalid request method.']); 
-  exit;
+  echo json_encode(['success'=>false, 'message'=>'Invalid request method.']); exit;
 }
 
 if (!isset($_SESSION['userId'])) {
-  echo json_encode(['success'=>false, 'message'=>'Not authenticated.']); 
-  exit;
+  echo json_encode(['success'=>false, 'message'=>'Not authenticated.']); exit;
 }
 $userId = $_SESSION['userId'];
 
 if (!isset($_FILES['fileUpload']) || $_FILES['fileUpload']['error'] !== UPLOAD_ERR_OK) {
-  echo json_encode(['success'=>false, 'message'=>'No file uploaded or upload error.']); 
-  exit;
+  echo json_encode(['success'=>false, 'message'=>'No file uploaded or upload error.']); exit;
 }
 
-$folderKey = isset($_POST['folder_key']) ? preg_replace('/[^a-z0-9_-]/i', '', $_POST['folder_key']) : 'accounting';
+$folderKey = isset($_POST['folder_key']) ? preg_replace('/[^a-z0-9_-]/i','',$_POST['folder_key']) : 'agriculture';
 $originalName = basename($_FILES['fileUpload']['name']);
 $filenameSafe = preg_replace('/[^A-Za-z0-9\-\._ ]/', '_', $originalName);
 
@@ -40,8 +36,7 @@ if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
 
 $targetPath = $uploadDir . $storedName;
 if (!move_uploaded_file($_FILES['fileUpload']['tmp_name'], $targetPath)) {
-  echo json_encode(['success'=>false, 'message'=>'Failed to move uploaded file.']); 
-  exit;
+  echo json_encode(['success'=>false, 'message'=>'Failed to move uploaded file.']); exit;
 }
 
 $filePathForDb = '../uploads/' . $storedName;

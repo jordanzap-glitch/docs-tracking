@@ -8,20 +8,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $firstname  = mysqli_real_escape_string($conn, $_POST['firstname']);
     $lastname   = mysqli_real_escape_string($conn, $_POST['lastname']);
     $email      = mysqli_real_escape_string($conn, $_POST['email']);
-    $department = mysqli_real_escape_string($conn, $_POST['department']);
+    $department_id = mysqli_real_escape_string($conn, $_POST['department_id']);
     $username   = mysqli_real_escape_string($conn, $_POST['username']);
     $password   = mysqli_real_escape_string($conn, $_POST['password']);
+    $usertype_id   = mysqli_real_escape_string($conn, $_POST['usertype_id']);
     $date_created = date("Y-m-d H:i:s");
 
     // Insert into tbl_admin
-    $sql_admin = "INSERT INTO tbl_user (firstname, lastname, email, department, username, password, status, date_created) 
-                  VALUES ('$firstname', '$lastname', '$email', '$department', '$username', '$password','active', '$date_created')";
+    $sql_admin = "INSERT INTO tbl_user (firstname, lastname, email, department_id, username, password, usertype_id, status, date_created) 
+                  VALUES ('$firstname', '$lastname', '$email', '$department_id', '$username', '$password','$usertype_id','active', '$date_created')";
 
-    // Insert into tbl_user
-    $sql_user = "INSERT INTO tbl_usertype (email, username, password, user_type, date_created) 
-                 VALUES ('$email', '$username', '$password', 'user', '$date_created')";
 
-    if (mysqli_query($conn, $sql_admin) && mysqli_query($conn, $sql_user)) {
+    if (mysqli_query($conn, $sql_admin)) {
         echo "<script>alert('Admin added successfully!'); window.location.href='add_admin.php';</script>";
         exit();
     } else {
@@ -92,15 +90,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <input type="email" name="email" class="form-control" required>
                   </div>
 
+
                   <div class="form-group">
                     <label>Department</label>
-                    <select name="department" class="form-control" required>
+                    <select name="usertype_id" class="form-control" required>
+                      <option value="">-- User Type --</option>
+                      <option value="1">Municipal Admin</option>
+                      <option value="2">Department Admin</option>
+                      <option value="3">Department Employee</option>
+                      <option value="4">Regular Employee</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Department</label>
+                    <select name="department_id" class="form-control" required>
                       <option value="">-- Select Department --</option>
-                      <option value="IT">IT</option>
-                      <option value="HR">HR</option>
-                      <option value="Finance">Finance</option>
-                      <option value="Library">Library</option>
-                      <option value="Registrar">Registrar</option>
+                      <option value="1">Mayor's Office</option>
+                      <option value="2">Deprtment of Agriculture</option>
+                      <option value="3">Department of Accounting</option>
                     </select>
                   </div>
 

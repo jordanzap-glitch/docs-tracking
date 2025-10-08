@@ -13,56 +13,74 @@ if (isset($_POST['login'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    // Check in Super Admin table
-    $query_superadmin = "SELECT * FROM superadmin WHERE username = '$username' AND password = '$password'";
-    $rs_superadmin = $conn->query($query_superadmin);
-    $num_superadmin = $rs_superadmin->num_rows;
+    // Check in tbl_user table
+    $query_user = "
+        SELECT * FROM tbl_user 
+        WHERE (email = '$username' OR username = '$username') 
+        AND password = '$password'
+        LIMIT 1
+    ";
+    $rs_user = $conn->query($query_user);
+    $num_user = $rs_user->num_rows;
 
-    if ($num_superadmin > 0) {
-        $rows_superadmin = $rs_superadmin->fetch_assoc();
-        $_SESSION['userId'] = $rows_superadmin['id'];
-        $_SESSION['fullname'] = $rows_superadmin['fullname'];
-        $_SESSION['user_type'] = 'superadmin';
+    if ($num_user > 0) {
+        $rows_user = $rs_user->fetch_assoc();
 
-        header('Location:SysAdmin/index.php');
+        $_SESSION['userId'] = $rows_user['id'];
+        $_SESSION['firstname'] = $rows_user['firstname'];
+        $_SESSION['lastname'] = $rows_user['lastname'];
+        $_SESSION['email'] = $rows_user['email'];
+        $_SESSION['usertype_id'] = $rows_user['usertype_id'];
+        $_SESSION['department_id'] = $rows_user['department_id'];
+
+        // Determine redirect based on usertype_id
+        switch ($rows_user['usertype_id']) {
+            case 1:
+                // Municipal Admin
+                header('Location: SysAdmin/index.php');
+                break;
+
+            case 2:
+                // Department Admin
+                if ($rows_user['department_id'] == 1) {
+                    header('Location: DepartmentAdmin/MayorsOffice/index.php');
+                } elseif ($rows_user['department_id'] == 2) {
+                    header('Location: SubAdmin_AGRI/index.php');
+                } elseif ($rows_user['department_id'] == 3) {
+                    header('Location: SubAdmin_ACCT/index.php');
+                } else {
+                    header('Location: DepartmentAdmin/index.php');
+                }
+                break;
+
+            case 3:
+                // Department Employee
+                if ($rows_user['department_id'] == 1) {
+                    header('Location: DepartmentAdmin/MayorsOffice/index.php');
+                } elseif ($rows_user['department_id'] == 2) {
+                    header('Location: User_AGRI/index.php');
+                } elseif ($rows_user['department_id'] == 3) {
+                    header('Location: SubAdmin_ACCT/index.php');
+                } else {
+                    header('Location: DepartmentAdmin/index.php');
+                }
+                break;
+
+            case 4:
+                // Regular Employee
+                header('Location: RegularEmployee/index.php');
+                break;
+
+            default:
+                // Unknown user type
+                $error_message = "Invalid user type configuration!";
+                break;
+        }
+
         exit();
     } else {
-        // Check in Admin table
-        $query_admin = "SELECT * FROM tbl_admin WHERE (email = '$username' OR username = '$username') AND password = '$password'";
-        $rs_admin = $conn->query($query_admin);
-        $num_admin = $rs_admin->num_rows;
-
-        if ($num_admin > 0) {
-            $rows_admin = $rs_admin->fetch_assoc();
-            $_SESSION['userId'] = $rows_admin['id'];
-            $_SESSION['firstname'] = $rows_admin['firstname'];
-            $_SESSION['lastname'] = $rows_admin['lastname'];
-            $_SESSION['email'] = $rows_admin['email'];
-            $_SESSION['user_type'] = 'admin';
-
-            header('Location:SubAdmin_ACCT/index.php');
-            exit();
-        } else {
-            // Check in Customer table
-            $query_customer = "SELECT * FROM tbl_customer WHERE (email = '$username' OR username = '$username') AND password = '$password'";
-            $rs_customer = $conn->query($query_customer);
-            $num_customer = $rs_customer->num_rows;
-
-            if ($num_customer > 0) {
-                $rows_customer = $rs_customer->fetch_assoc();
-                $_SESSION['userId'] = $rows_customer['id'];
-                $_SESSION['firstname'] = $rows_customer['firstname'];
-                $_SESSION['lastname'] = $rows_customer['lastname'];
-                $_SESSION['email'] = $rows_customer['email'];
-                $_SESSION['user_type'] = 'customer';
-
-                header('Location:Customer/index.php');
-                exit();
-            } else {
-                // Invalid login
-                $error_message = "Invalid Username/Password!";
-            }
-        }
+        // Invalid login
+        $error_message = "Invalid Username/Password!";
     }
 }
 
@@ -75,7 +93,7 @@ ob_end_flush();
 <head>
   <meta charset="UTF-8">
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
-  <title>Login &mdash; Stisla</title>
+  <title>Login &mdash; User Portal</title>
 
   <!-- General CSS Files -->
   <link rel="stylesheet" href="assets/modules/bootstrap/css/bootstrap.min.css">
@@ -87,16 +105,17 @@ ob_end_flush();
   <!-- Template CSS -->
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="assets/css/components.css">
-<!-- Start GA -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-94034622-3"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
 
-  gtag('config', 'UA-94034622-3');
-</script>
-<!-- /END GA --></head>
+  <!-- Start GA -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-94034622-3"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-94034622-3');
+  </script>
+  <!-- /END GA -->
+</head>
 
 <body>
   <div id="app">
@@ -129,11 +148,9 @@ ob_end_flush();
 
                   <div class="form-group">
                     <div class="d-block">
-                    	<label for="password" class="control-label">Password</label>
+                      <label for="password" class="control-label">Password</label>
                       <div class="float-right">
-                        <a href="auth-forgot-password.html" class="text-small">
-
-                        </a>
+                        <a href="auth-forgot-password.html" class="text-small"></a>
                       </div>
                     </div>
                     <input id="password" type="password" class="form-control" name="password" tabindex="2" required>
@@ -155,16 +172,11 @@ ob_end_flush();
                     </button>
                   </div>
                 </form>
-               
-
               </div>
             </div>
-            <div class="mt-5 text-muted text-center">
 
-            </div>
-            <div class="simple-footer">
-
-            </div>
+            <div class="mt-5 text-muted text-center"></div>
+            <div class="simple-footer"></div>
           </div>
         </div>
       </div>
@@ -179,10 +191,6 @@ ob_end_flush();
   <script src="assets/modules/nicescroll/jquery.nicescroll.min.js"></script>
   <script src="assets/modules/moment.min.js"></script>
   <script src="assets/js/stisla.js"></script>
-  
-  <!-- JS Libraies -->
-
-  <!-- Page Specific JS File -->
   
   <!-- Template JS File -->
   <script src="assets/js/scripts.js"></script>
