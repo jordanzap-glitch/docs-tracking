@@ -1,5 +1,5 @@
 <?php
-session_start();
+include '../assets/includes/session.php';
 include '../assets/includes/db/dbcon.php';
 ?>
 <!DOCTYPE html>

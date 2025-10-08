@@ -61,8 +61,8 @@ include '../assets/includes/db/dbcon.php';
   <div id="app">
     <div class="main-wrapper main-wrapper-1">
       <div class="navbar-bg"></div>
-      <?php include '../assets/includes/sysadmin/navbar.php'; ?>
-      <?php include '../assets/includes/sysadmin/activate/folderactive.php'; ?>
+      <?php include '../assets/includes/subadmin_acct/navbar.php'; ?>
+      <?php include '../assets/includes/subadmin_acct/activate/folderactive.php'; ?>
 
       <div class="main-content">
         <section class="section">
@@ -135,7 +135,7 @@ include '../assets/includes/db/dbcon.php';
           </div>
         </section>
       </div>
-      <?php include '../assets/includes/sysadmin/footer.php'; ?>
+      <?php include '../assets/includes/subadmin_acct/footer.php'; ?>
     </div>
   </div>
 

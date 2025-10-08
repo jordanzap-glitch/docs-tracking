@@ -32,7 +32,7 @@
             </li>
             <!-- end -->
             <li class="menu-header">File Management</li>
-            <li><a class="nav-link" href="foldersbak.php"><i class="far fa-folder"></i> <span>Folders Page</span></a></li>
+            <li><a class="nav-link" href="folders.php"><i class="far fa-folder"></i> <span>Folders Page</span></a></li>
             <li class="dropdown">
               <a href="#" class="nav-link has-dropdown"><i class="fas fa-th"></i> <span>Aprrovals/Tables</span></a>
               <ul class="dropdown-menu">

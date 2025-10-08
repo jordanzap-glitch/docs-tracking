@@ -1,5 +1,5 @@
 <?php
-session_start();
+include '../assets/includes/session.php';
 header('Content-Type: application/json; charset=utf-8');
 include '../assets/includes/db/dbcon.php';
 
