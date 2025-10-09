@@ -109,6 +109,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                       <option value="1">Mayor's Office</option>
                       <option value="2">Deprtment of Agriculture</option>
                       <option value="3">Department of Accounting</option>
+                      <option value="9">Employee Only</option>
                     </select>
                   </div>
 

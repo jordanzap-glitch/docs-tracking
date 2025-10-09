@@ -101,7 +101,7 @@ include '../assets/includes/db/dbcon.php';
               <div class="col-lg-9 upload-column">
                 <div class="card upload-card" id="uploadCard">
                   <div class="card-header bg-white border-bottom">
-                    <h4><i class="fas fa-upload"></i> Upload to <span id="folderName">None</span></h4>
+                    <h4><i class="fas fa-upload"></i><span id="folderName">Files</span></h4>
                   </div>
                   <div class="card-body">
                     <button class="upload-btn" id="uploadBtn"><i class="fas fa-file-upload"></i> Upload File</button>
@@ -112,13 +112,14 @@ include '../assets/includes/db/dbcon.php';
                           <th>File Name</th>
                           <th>Uploaded By</th>
                           <th>Department</th>
+                          <th>User Type</th>
                           <th>Date Uploaded</th>
                           <th>Status</th>
                           <th>Action</th>
                         </tr>
                       </thead>
                       <tbody id="fileList">
-                        <tr><td colspan="6" class="text-center text-muted">No folder selected.</td></tr>
+                        <tr><td colspan="7" class="text-center text-muted">No folder selected.</td></tr>
                       </tbody>
                     </table>
 

@@ -60,7 +60,7 @@ if (isset($_POST['login'])) {
                 } elseif ($rows_user['department_id'] == 2) {
                     header('Location: User_AGRI/index.php');
                 } elseif ($rows_user['department_id'] == 3) {
-                    header('Location: SubAdmin_ACCT/index.php');
+                    header('Location: User_ACCT/index.php');
                 } else {
                     header('Location: DepartmentAdmin/index.php');
                 }
@@ -68,7 +68,7 @@ if (isset($_POST['login'])) {
 
             case 4:
                 // Regular Employee
-                header('Location: RegularEmployee/index.php');
+                header('Location: User/index.php');
                 break;
 
             default:
