@@ -32,18 +32,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['fil
 
   $folderId = 1;
 
-  // Mark the previous "Pending" record for this file as Processed
-  $markProcessed = $conn->prepare("UPDATE tbl_fileaudittrails SET status = 'Processed' WHERE file_id = ? AND status = 'Pending'");
-  $markProcessed->bind_param('i', $fileId);
-  $markProcessed->execute();
-  $markProcessed->close();
-
   // ----------------------------------
-  // Forward File (Approve)
+  // Forward File (Updated Logic)
   // ----------------------------------
   if ($action === 'forward') {
-    $status = 'Approved';
-    $actionType = 'Forwarded';
+    $status = 'Forwarded';
+    $actionType = 'Under Review';
     $toDepartmentId = 2;
     $toUsertypeId = 2;
     $remarks = null;
@@ -220,6 +214,7 @@ $query = "
 $result = mysqli_query($conn, $query);
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -276,7 +271,7 @@ $result = mysqli_query($conn, $query);
                         <th>Action</th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="auditTableBody">
                       <?php
                       if (mysqli_num_rows($result) > 0) {
                         $count = 1;
@@ -400,5 +395,6 @@ $result = mysqli_query($conn, $query);
       });
     });
   </script>
+  
 </body>
 </html>

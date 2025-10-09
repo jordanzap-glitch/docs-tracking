@@ -83,18 +83,22 @@ try {
     $insertId = $stmt->insert_id;
     $stmt->close();
 
-    // 10. Insert into tbl_fileaudittrails (with folder_id = 1)
+    // 10. Insert into tbl_fileaudittrails
+    // Includes: status = 'pending', action_type = 'Submitted', to_department_id = 2, to_usertype_id = 3
     $status = 'Pending';
+    $actionType = 'Uploaded';
     $remarks = null;
-    $folderId = 1;
+    $folderId = 1; # the folder for the agriculture
+    $toDepartmentId = 2;  # Agriculture Department
+    $toUsertypeId = 2; # Agriculture Department Staff
 
     $stmt2 = $conn->prepare("
         INSERT INTO tbl_fileaudittrails 
-        (file_id, user_id, user_department_id, usertype_id, folder_id, status, remarks, time_stamp) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
+        (file_id, user_id, user_department_id, usertype_id, folder_id, status, action_type, to_department_id, to_usertype_id, remarks, time_stamp) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
     ");
     if (!$stmt2) throw new Exception($conn->error);
-    $stmt2->bind_param('iiiisss', $insertId, $userId, $departmentId, $usertypeId, $folderId, $status, $remarks);
+    $stmt2->bind_param('iiiisssiis', $insertId, $userId, $departmentId, $usertypeId, $folderId, $status, $actionType, $toDepartmentId, $toUsertypeId, $remarks);
     $stmt2->execute();
     $stmt2->close();
 

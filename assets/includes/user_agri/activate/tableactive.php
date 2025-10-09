@@ -1,14 +1,14 @@
 <nav class="navbar navbar-secondary navbar-expand-lg">
         <div class="container">
           <ul class="navbar-nav">
-            <li class="nav-item active">
+            <li class="nav-item">
               <a href="index.php" class="nav-link"><i class="fas fa-home"></i><span>Home Page</span></a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item ">
               <a href="approvals.php" class="nav-link"><i class="fas fa-check"></i><span>Approvals</span></a>
             </li>
-            <li class="nav-item">
-              <a href="table.php" class="nav-link"><i class="fas fa-table"></i><span>Tables</span></a>
+            <li class="nav-item active">
+              <a href="Table.php" class="nav-link"><i class="fas fa-table"></i><span>Table</span></a>
             </li>
             <li class="nav-item dropdown">
               <a href="#" data-toggle="dropdown" class="nav-link has-dropdown"><i class="far fa-clone"></i><span>Multiple Dropdown</span></a>
