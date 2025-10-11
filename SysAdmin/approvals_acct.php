@@ -67,12 +67,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modal_action'], $_POS
     $folderId = 1;
 
     if ($action === 'approve') {
-        // Forward (approve) file logic
-        $status = 'Approved';
-        $actionType = 'Under Review';
-        $toDepartmentId = 1;
-        $toUsertypeId = 1;
-        $remarks = null;
+        // Final approval logic
+        $status = 'Completed';
+        $actionType = 'Final Approval';
+        $toDepartmentId = null;
+        $toUsertypeId = null;
+        $remarks = 'Final Approval';
 
         $insertQuery = $conn->prepare("
             INSERT INTO tbl_fileaudittrails 
@@ -126,8 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modal_action'], $_POS
     if (isset($insertQuery)) $insertQuery->close();
 }
 
-// 4. Fetch Forwarded or Pending Files (user_type = 3, folder_id = 1)
-// --- FIXED: exclude any file that has already been approved by ANY user ---
+// 4. Fetch Approved Files (excluding Completed ones)
 $query = "
     SELECT 
         a.id AS audit_id,
@@ -148,22 +147,25 @@ $query = "
     LEFT JOIN tbl_files f ON a.file_id = f.id
     LEFT JOIN tbl_user u ON a.user_id = u.id
     LEFT JOIN tbl_departments d ON a.user_department_id = d.id
-    WHERE a.usertype_id = 3
-      AND a.folder_id = 1
-      AND a.status IN ('Forwarded', 'Pending')
+    WHERE a.status = 'Approved'
+      AND a.to_department_id = 1
+      AND a.to_usertype_id = 1
+      AND a.folder_id = 2
       AND a.file_id NOT IN (
-          SELECT file_id FROM tbl_fileaudittrails WHERE status = 'Approved'
+          SELECT file_id FROM tbl_fileaudittrails WHERE status = 'Completed'
       )
     ORDER BY a.time_stamp DESC
 ";
-$result = mysqli_query($conn, $query);
+$stmt = $conn->prepare($query);
+$stmt->execute();
+$result = $stmt->get_result();
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
-<title>Pending File Approvals — System</title>
+<title>Approved Files — Department of Agriculture</title>
 
 <link rel="stylesheet" href="../assets/modules/bootstrap/css/bootstrap.min.css">
 <link rel="stylesheet" href="../assets/modules/fontawesome/css/all.min.css">
@@ -183,27 +185,51 @@ $result = mysqli_query($conn, $query);
 .btn-approve:hover { background: #218838; }
 .btn-return { background: #dc3545; color: #fff; }
 .btn-return:hover { background: #c82333; }
+#remarksContainer { display: none; margin-top: 10px; }
+.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+  background-color: #0f7c01ff;
+  color: white !important;
+  font-weight: 600;
+}
+.nav-tabs .nav-link {
+  color: #007bff;
+  font-weight: 500;
+}
 </style>
 </head>
 <body>
 <div id="app">
   <div class="main-wrapper main-wrapper-1">
     <div class="navbar-bg"></div>
-    <?php include '../assets/includes/subadmin_agri/navbar.php'; ?>
-    <?php include '../assets/includes/subadmin_agri/activate/approvalsactive.php'; ?>
+    <?php include '../assets/includes/sysadmin/navbar.php'; ?>
+    <?php include '../assets/includes/sysadmin/activate/approvalsactive.php'; ?>
 
     <div class="main-content">
       <section class="section">
         <div class="section-header">
-          <h1>Pending File Approvals</h1>
+          <h1>Approved Files — Department of Accounting</h1>
         </div>
 
         <div class="section-body">
           <?php if (!empty($statusMsg)) echo $statusMsg; ?>
 
+          <!-- TABS for Departments -->
+          <ul class="nav nav-tabs mb-4">
+            <li class="nav-item">
+              <a class="nav-link" href="approvals_agri.php">
+                <i class="fas fa-leaf"></i> Department of Agriculture
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="approvals_acct.php">
+                <i class="fas fa-calculator"></i> Department of Accounting
+              </a>
+            </li>
+          </ul>
+
           <div class="card">
             <div class="card-header">
-              <h4><i class="fas fa-clock text-warning"></i> Forwarded & Pending Files (User Type: 3, Folder ID: 1)</h4>
+              <h4><i class="fas fa-check text-success"></i> Approved Files (Accounting)</h4>
             </div>
             <div class="card-body">
               <div class="table-responsive">
@@ -222,15 +248,13 @@ $result = mysqli_query($conn, $query);
                   </thead>
                   <tbody>
                   <?php
-                  if (mysqli_num_rows($result) > 0) {
+                  if ($result->num_rows > 0) {
                       $count = 1;
-                      while ($row = mysqli_fetch_assoc($result)) {
+                      while ($row = $result->fetch_assoc()) {
                           $fullname = !empty($row['firstname']) ? htmlspecialchars($row['firstname'] . ' ' . $row['lastname']) : 'Unknown';
                           $department = !empty($row['department_name']) ? htmlspecialchars($row['department_name']) : '<span class="text-muted">—</span>';
                           $remarks = !empty($row['remarks']) ? htmlspecialchars($row['remarks']) : '<span class="text-muted">—</span>';
-                          $statusBadge = ($row['status'] === 'Forwarded')
-                             ? '<span class="badge badge-success"><i class="fas fa-share"></i> Forwarded</span>'
-                             : '<span class="badge badge-warning"><i class="fas fa-clock"></i> Pending</span>';
+                          $statusBadge = '<span class="badge badge-success"><i class="fas fa-check-circle"></i> Approved</span>';
 
                           echo "<tr>
                                   <td>{$count}</td>
@@ -253,7 +277,7 @@ $result = mysqli_query($conn, $query);
                           $count++;
                       }
                   } else {
-                      echo "<tr><td colspan='8' class='text-center text-muted'>No forwarded or pending records found (User Type 3, Folder ID: 1).</td></tr>";
+                      echo "<tr><td colspan='8' class='text-center text-muted'>No approved records found for Accounting.</td></tr>";
                   }
                   ?>
                   </tbody>
@@ -265,7 +289,7 @@ $result = mysqli_query($conn, $query);
       </section>
     </div>
 
-    <?php include '../assets/includes/subadmin_agri/footer.php'; ?>
+    <?php include '../assets/includes/sysadmin/footer.php'; ?>
   </div>
 </div>
 
@@ -277,26 +301,30 @@ $result = mysqli_query($conn, $query);
         <h5 class="modal-title" id="pdfModalLabel"><i class="fas fa-file-pdf"></i> View PDF</h5>
         <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
       </div>
-      <div class="modal-body">
-        <iframe id="pdfViewer" src=""></iframe>
-      </div>
-      <div class="pdf-controls">
-        <form method="post" id="actionForm">
+      <form method="POST" id="modalForm">
+        <div class="modal-body">
           <input type="hidden" name="modal_file_id" id="modalFileId">
-          <div class="form-group">
-            <label for="modal_remarks">Remarks (required if returning file):</label>
-            <textarea name="modal_remarks" id="modal_remarks" class="form-control" placeholder="Enter remarks if returning"></textarea>
+          <iframe id="pdfViewer" src=""></iframe>
+
+          <!-- Remarks section for Return -->
+          <div id="remarksContainer" class="p-3">
+            <label for="modal_remarks"><strong>Return Remarks:</strong></label>
+            <textarea name="modal_remarks" id="modal_remarks" rows="3" class="form-control" placeholder="Enter reason for returning the file..."></textarea>
           </div>
-          <div class="text-right">
-            <button type="submit" name="modal_action" value="approve" class="btn btn-success btn-approve">
-              <i class="fas fa-check"></i> Approve
-            </button>
-            <button type="submit" name="modal_action" value="return" class="btn btn-danger btn-return">
-              <i class="fas fa-undo"></i> Return
-            </button>
-          </div>
-        </form>
-      </div>
+        </div>
+
+        <div class="pdf-controls">
+          <button type="submit" name="modal_action" value="approve" class="btn btn-approve">
+            <i class="fas fa-check"></i> Approve
+          </button>
+          <button type="button" id="showReturnRemarks" class="btn btn-return">
+            <i class="fas fa-undo"></i> Return
+          </button>
+          <button type="submit" id="confirmReturnBtn" name="modal_action" value="return" class="btn btn-danger" style="display:none;">
+            <i class="fas fa-paper-plane"></i> Confirm Return
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
@@ -315,36 +343,34 @@ $result = mysqli_query($conn, $query);
 <script>
 $(document).ready(function () {
   $.fn.dataTable.ext.errMode = 'none';
-    $('#auditTable').DataTable({
-        pageLength: 10,
-        ordering: false,
-        responsive: true
-    });
+  $('#auditTable').DataTable({
+      pageLength: 10,
+      ordering: false,
+      responsive: true
+  });
 
-    // View button click
-    $('.view-btn').click(function() {
-        const filePath = $(this).data('file');
-        const fileId = $(this).data('id');
-        const fileName = $(this).data('filename');
+  // View button click
+  $('.view-btn').click(function() {
+      const filePath = $(this).data('file');
+      const fileId = $(this).data('id');
+      const fileName = $(this).data('filename');
 
-        // Log viewed action via AJAX
-        $.post('', { view_file_id: fileId }, function(response) {
-            console.log('Viewed logged', response);
-        }, 'json');
+      $.post('', { view_file_id: fileId }, function(response) {
+          console.log('Viewed logged', response);
+      }, 'json');
 
-        $('#pdfViewer').attr('src', filePath + "#view=FitH");
-        $('#pdfModalLabel').text('Viewing: ' + fileName);
-        $('#modalFileId').val(fileId);
-        $('#pdfModal').modal('show');
-    });
+      $('#pdfViewer').attr('src', filePath + "#view=FitH");
+      $('#pdfModalLabel').text('Viewing: ' + fileName);
+      $('#modalFileId').val(fileId);
+      $('#pdfModal').modal('show');
+  });
 
-    // Prevent return if remarks empty
-    $('.btn-return').click(function(e){
-        if ($('#modal_remarks').val().trim() === '') {
-            e.preventDefault();
-            alert('Please enter remarks before returning the file.');
-        }
-    });
+  // Show remarks when return is clicked
+  $('#showReturnRemarks').click(function() {
+      $('#remarksContainer').slideDown();
+      $('#confirmReturnBtn').show();
+      $(this).hide();
+  });
 });
 </script>
 </body>

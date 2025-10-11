@@ -15,11 +15,11 @@
               </ul>
             </li>
             <li class="menu-header">File Management</li>
-            <li><a class="nav-link" href="foldersbak.php"><i class="far fa-folder"></i> <span>Folder</span></a></li>
+            <li><a class="nav-link" href="folder.php"><i class="far fa-folder"></i> <span>Folder</span></a></li>
             <li class="dropdown active">
               <a href="#" class="nav-link has-dropdown"><i class="fas fa-th"></i> <span>Approvals/Tables</span></a>
               <ul class="dropdown-menu">
-                <li class="active"><a class="nav-link" href="approvalsactive.php">Approvals</a></li>
+                <li class="active"><a class="nav-link" href="approvals_agri.php">Approvals</a></li>
                 <li><a class="nav-link" href="file_table.php">Tables</a></li>
               </ul>
             </li>

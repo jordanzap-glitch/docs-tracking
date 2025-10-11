@@ -1,5 +1,5 @@
 <?php
-session_start();
+include '../assets/includes/session.php';
 header('Content-Type: application/json; charset=utf-8');
 include '../assets/includes/db/dbcon.php';
 
@@ -59,20 +59,21 @@ if (!move_uploaded_file($_FILES['fileUpload']['tmp_name'], $targetPath)) {
 $filePathForDb = '../uploads/' . $storedName; // relative path
 
 try {
-    // 8. Get user_department_id from tbl_users
-    $deptQuery = $conn->prepare("SELECT department_id FROM tbl_user WHERE id = ?");
-    if (!$deptQuery) throw new Exception($conn->error);
-    $deptQuery->bind_param('i', $userId);
-    $deptQuery->execute();
-    $deptResult = $deptQuery->get_result();
+    // 8. Get department_id and usertype_id from tbl_user
+    $userQuery = $conn->prepare("SELECT department_id, usertype_id FROM tbl_user WHERE id = ?");
+    if (!$userQuery) throw new Exception($conn->error);
+    $userQuery->bind_param('i', $userId);
+    $userQuery->execute();
+    $userResult = $userQuery->get_result();
 
-    if ($deptResult->num_rows === 0) {
+    if ($userResult->num_rows === 0) {
         throw new Exception('User not found.');
     }
 
-    $deptRow = $deptResult->fetch_assoc();
-    $departmentId = intval($deptRow['department_id']);
-    $deptQuery->close();
+    $userRow = $userResult->fetch_assoc();
+    $departmentId = intval($userRow['department_id']);
+    $usertypeId   = intval($userRow['usertype_id']);
+    $userQuery->close();
 
     // 9. Insert into tbl_files
     $stmt = $conn->prepare("INSERT INTO tbl_files (filename, file_path, user_id, date_uploaded) VALUES (?, ?, ?, NOW())");
@@ -82,19 +83,29 @@ try {
     $insertId = $stmt->insert_id;
     $stmt->close();
 
-    // 10. Insert into tbl_fileaudittrails (with user_department_id)
+    // 10. Insert into tbl_fileaudittrails
+    // Includes: status = 'pending', action_type = 'Submitted', to_department_id = 2, to_usertype_id = 3
     $status = 'Pending';
+    $actionType = 'Uploaded';
     $remarks = null;
-    $stmt2 = $conn->prepare("INSERT INTO tbl_fileaudittrails (file_id, user_id, user_department_id, status, remarks, time_stamp) VALUES (?, ?, ?, ?, ?, NOW())");
+    $folderId = 1; # the folder for the agriculture
+    $toDepartmentId = 2;  # Agriculture Department
+    $toUsertypeId = 1; # to Municipal Admin
+
+    $stmt2 = $conn->prepare("
+        INSERT INTO tbl_fileaudittrails 
+        (file_id, user_id, user_department_id, usertype_id, folder_id, status, action_type, to_department_id, to_usertype_id, remarks, time_stamp) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+    ");
     if (!$stmt2) throw new Exception($conn->error);
-    $stmt2->bind_param('iiiss', $insertId, $userId, $departmentId, $status, $remarks);
+    $stmt2->bind_param('iiiisssiis', $insertId, $userId, $departmentId, $usertypeId, $folderId, $status, $actionType, $toDepartmentId, $toUsertypeId, $remarks);
     $stmt2->execute();
     $stmt2->close();
 
     echo json_encode(['success' => true, 'message' => 'File uploaded successfully!', 'file_id' => $insertId]);
 
 } catch (Exception $e) {
-    // Remove uploaded file if DB fails
+    // Rollback file if DB insert fails
     if (file_exists($targetPath)) unlink($targetPath);
     echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
 }
