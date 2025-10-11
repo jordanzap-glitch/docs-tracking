@@ -13,7 +13,6 @@ if (!isset($_SESSION['userId'])) {
 if (isset($_POST['view_file_id'])) {
     $viewFileId = intval($_POST['view_file_id']);
     $userId = $_SESSION['userId'];
-    $date_update = date('Y-m-d H:i:s');
 
     // Get user department and type
     $userQuery = $conn->prepare("SELECT department_id, usertype_id FROM tbl_user WHERE id=? LIMIT 1");
@@ -35,9 +34,9 @@ if (isset($_POST['view_file_id'])) {
     $stmt = $conn->prepare("
         INSERT INTO tbl_fileaudittrails 
         (file_id, user_id, user_department_id, usertype_id, folder_id, status, action_type, to_department_id, to_usertype_id, remarks, time_stamp)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
     ");
-    $stmt->bind_param('iiiisssiiss', $viewFileId, $userId, $userDepartmentId, $userType, $folderId, $status, $actionType, $toDepartmentId, $toUsertypeId, $remarks, $date_update);
+    $stmt->bind_param('iiiisssiis', $viewFileId, $userId, $userDepartmentId, $userType, $folderId, $status, $actionType, $toDepartmentId, $toUsertypeId, $remarks);
     $stmt->execute();
     $stmt->close();
 
@@ -52,7 +51,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modal_action'], $_POS
     $fileId = intval($_POST['modal_file_id']);
     $action = $_POST['modal_action'];
     $userId = $_SESSION['userId'];
-    $date_update = date('Y-m-d H:i:s');
 
     // Get user department and type
     $userQuery = $conn->prepare("SELECT department_id, usertype_id FROM tbl_user WHERE id = ? LIMIT 1");
@@ -77,9 +75,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modal_action'], $_POS
         $insertQuery = $conn->prepare("
             INSERT INTO tbl_fileaudittrails 
             (file_id, user_id, user_department_id, usertype_id, folder_id, status, action_type, to_department_id, to_usertype_id, remarks, time_stamp)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
         ");
-        $insertQuery->bind_param('iiiisssiiss', $fileId, $userId, $userDepartmentId, $userType, $folderId, $status, $actionType, $toDepartmentId, $toUsertypeId, $remarks, $date_update);
+        $insertQuery->bind_param('iiiisssiis', $fileId, $userId, $userDepartmentId, $userType, $folderId, $status, $actionType, $toDepartmentId, $toUsertypeId, $remarks);
 
     } elseif ($action === 'return') {
         // Return file logic
@@ -100,9 +98,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modal_action'], $_POS
             $insertQuery = $conn->prepare("
                 INSERT INTO tbl_fileaudittrails 
                 (file_id, user_id, user_department_id, usertype_id, folder_id, status, action_type, to_department_id, to_usertype_id, remarks, time_stamp)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
             ");
-            $insertQuery->bind_param('iiiisssiiss', $fileId, $userId, $userDepartmentId, $userType, $folderId, $status, $actionType, $toDepartmentId, $toUsertypeId, $remarks, $date_update);
+            $insertQuery->bind_param('iiiisssiis', $fileId, $userId, $userDepartmentId, $userType, $folderId, $status, $actionType, $toDepartmentId, $toUsertypeId, $remarks);
         }
     }
 

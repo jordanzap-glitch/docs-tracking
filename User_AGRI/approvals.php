@@ -18,7 +18,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['fil
   $fileId = intval($_POST['file_id']);
   $action = $_POST['action'];
   $userId = $_SESSION['userId'];
-  $date_update = date('Y-m-d H:i:s');
 
   // Get user details
   $userQuery = $conn->prepare("SELECT department_id, usertype_id FROM tbl_user WHERE id = ? LIMIT 1");
@@ -45,10 +44,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['fil
     $insertQuery = $conn->prepare("
       INSERT INTO tbl_fileaudittrails 
       (file_id, user_id, user_department_id, usertype_id, folder_id, status, action_type, to_department_id, to_usertype_id, remarks, time_stamp)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
     ");
     $insertQuery->bind_param(
-      'iiiisssiiss',
+      'iiiisssiis',
       $fileId,
       $userId,
       $userDepartmentId,
@@ -58,8 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['fil
       $actionType,
       $toDepartmentId,
       $toUsertypeId,
-      $remarks,
-      $date_update
+      $remarks
     );
 
     if ($insertQuery->execute()) {
@@ -95,10 +93,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['fil
       $insertQuery = $conn->prepare("
         INSERT INTO tbl_fileaudittrails 
         (file_id, user_id, user_department_id, usertype_id, folder_id, status, action_type, to_department_id, to_usertype_id, remarks, time_stamp)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
       ");
       $insertQuery->bind_param(
-        'iiiisssiiss',
+        'iiiisssiis',
         $fileId,
         $userId,
         $userDepartmentId,
@@ -108,8 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['fil
         $actionType,
         $toDepartmentId,
         $toUsertypeId,
-        $remarks,
-        $date_update
+        $remarks
       );
 
       if ($insertQuery->execute()) {
@@ -134,7 +131,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['fil
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['viewed_file_id'])) {
   $fileId = intval($_POST['viewed_file_id']);
   $userId = $_SESSION['userId'];
-  $date_update = date('Y-m-d H:i:s');
 
   $userQuery = $conn->prepare("SELECT department_id, usertype_id FROM tbl_user WHERE id = ? LIMIT 1");
   $userQuery->bind_param('i', $userId);
@@ -155,10 +151,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['viewed_file_id'])) {
   $insertQuery = $conn->prepare("
     INSERT INTO tbl_fileaudittrails 
     (file_id, user_id, user_department_id, usertype_id, folder_id, status, action_type, to_department_id, to_usertype_id, remarks, time_stamp)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
   ");
   $insertQuery->bind_param(
-    'iiiisssiiss',
+    'iiiisssiis',
     $fileId,
     $userId,
     $userDepartmentId,
@@ -168,8 +164,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['viewed_file_id'])) {
     $actionType,
     $toDepartmentId,
     $toUsertypeId,
-    $remarks,
-    $date_update
+    $remarks
   );
   $insertQuery->execute();
   $insertQuery->close();
