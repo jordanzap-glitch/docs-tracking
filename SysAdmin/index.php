@@ -61,6 +61,31 @@ include '../assets/includes/db/dbcon.php';
       font-size: 1.5rem;
       font-weight: bold;
     }
+
+    /* Activities timeline style */
+    .activities {
+      position: relative;
+      padding-left: 40px;
+    }
+    .activity {
+      position: relative;
+      margin-bottom: 20px;
+    }
+    .activity-icon {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+    .activity-detail {
+      margin-left: 45px;
+    }
   </style>
 </head>
 
@@ -74,8 +99,6 @@ include '../assets/includes/db/dbcon.php';
       <!-- Main Content -->
       <div class="main-content">
         <section class="section">
-          <!-- Removed File Activity Logs header -->
-
           <div class="section-body">
             
             <!-- DASHBOARD CARDS -->
@@ -139,27 +162,6 @@ include '../assets/includes/db/dbcon.php';
                   </div>
                 </div>
               </div>
-
-              <!-- Pending Files -->
-               <!--
-              <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                <div class="card card-statistic-1">
-                  <div class="card-icon gradient-4">
-                    <i class="fas fa-clock"></i>
-                  </div>
-                  <div class="card-wrap">
-                    <div class="card-header">
-                      <h4>Pending Files</h4>
-                    </div>
-                    <div class="card-body">
-                      <?php
-                     # $countPending = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total FROM tbl_fileautdit WHERE status = 'Pending'"));
-                      #echo $countPending['total'];
-                      ?>
-                    </div>
-                  </div>
-                </div>
-              </div> -->
             </div>
 
             <!-- RECENT FILE ACTIVITIES -->
@@ -188,15 +190,22 @@ include '../assets/includes/db/dbcon.php';
             </ul>
 
             <div class="tab-content" id="deptTabsContent">
-
+              
               <!-- ALL DEPARTMENTS TAB -->
-              <?php include './alltrackfile.php'?>
+              <div class="tab-pane fade show active" id="all" role="tabpanel" aria-labelledby="all-tab">
+                <?php include 'alltab.php'; ?>
+              </div>
 
-              <!-- DEPARTMENT OF AGRICULTURE TAB -->
-              <?php include './trackfile_agri.php'?>
+              <!-- AGRICULTURE TAB -->
+              <div class="tab-pane fade" id="agri" role="tabpanel" aria-labelledby="agri-tab">
+                <?php include 'agriculturetab.php'; ?>
+              </div>
 
-              <!-- DEPARTMENT OF ACCOUNTING TAB -->
-              <?php include './trackfile_acct.php'?>
+              <!-- ACCOUNTING TAB -->
+              <div class="tab-pane fade" id="acct" role="tabpanel" aria-labelledby="acct-tab">
+                <?php include 'accountingtab.php'; ?>
+              </div>
+
             </div>
           </div>
         </section>
@@ -218,6 +227,5 @@ include '../assets/includes/db/dbcon.php';
   <!-- Template JS File -->
   <script src="../assets/js/scripts.js"></script>
   <script src="../assets/js/custom.js"></script>
-
 </body>
 </html>
