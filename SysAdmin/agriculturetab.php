@@ -41,8 +41,8 @@ if (mysqli_num_rows($filesQuery) > 0) {
     $fileName = $file['filename'];
 
     echo '<div class="card mb-4">
-            <div class="card-header bg-success text-white">
-              <h4><i class="fas fa-seedling"></i> ' . htmlspecialchars($fileName) . ' <span class="badge badge-light text-success">Agriculture Dept.</span></h4>
+            <div class="card-header bg-primary text-white">
+              <h4><i class="fas fa-seedling"></i> ' . htmlspecialchars($fileName) . ' <span class="badge badge-light text-primary">Agriculture Dept.</span></h4>
             </div>
             <div class="card-body">
               <div class="activities">';
@@ -72,7 +72,7 @@ if (mysqli_num_rows($filesQuery) > 0) {
 
       // Determine icon based on action type
       $icon = "fas fa-info-circle";
-      $iconColor = "bg-success";
+      $iconColor = "bg-primary";
       if (stripos($action, 'view') !== false) $icon = "fas fa-eye";
       elseif (stripos($action, 'approve') !== false) $icon = "fas fa-check";
       elseif (stripos($action, 'return') !== false) $icon = "fas fa-undo";
@@ -81,12 +81,12 @@ if (mysqli_num_rows($filesQuery) > 0) {
 
       echo '
         <div class="activity">
-          <div class="activity-icon ' . $iconColor . ' text-white shadow-success">
+          <div class="activity-icon ' . $iconColor . ' text-white shadow-primary">
             <i class="' . $icon . '"></i>
           </div>
           <div class="activity-detail">
             <div class="mb-2">
-              <span class="text-job text-success">' . $timestamp . '</span>
+              <span class="text-job text-primary">' . $timestamp . '</span>
               <span class="bullet"></span>
               <span class="text-job">' . $status . '</span>
               <div class="float-right dropdown">
