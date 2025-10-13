@@ -3,16 +3,17 @@ include '../assets/includes/db/dbcon.php';
 ?>
 
 <!-- SEARCH BAR -->
-<form method="GET" class="mb-4">
+<form method="GET" class="mb-4" onsubmit="return false;">
   <div class="input-group">
-    <input type="text" name="search_filename" class="form-control" placeholder="Search by Filename..." value="<?php echo isset($_GET['search_filename']) ? htmlspecialchars($_GET['search_filename']) : ''; ?>">
+    <input type="text" id="searchInput" name="search_filename" class="form-control" placeholder="Search by Filename...">
     <div class="input-group-append">
-      <button class="btn btn-success" type="submit"><i class="fas fa-search"></i> Search</button>
-      <button type="button" class="btn btn-info" onclick="window.location.href='index.php'"><i class="fas fa-undo"></i> Reset</button>
+      <button type="button" class="btn btn-info" id="resetBtn"><i class="fas fa-undo"></i> Reset</button>
     </div>
   </div>
 </form>
 
+<!-- RESULTS CONTAINER -->
+<div id="resultsContainer">
 <?php
 $search = "";
 if (isset($_GET['search_filename']) && $_GET['search_filename'] != "") {
@@ -111,3 +112,40 @@ if (mysqli_num_rows($filesQuery) > 0) {
   echo '<div class="alert alert-info">No file activities found.</div>';
 }
 ?>
+</div>
+
+<!-- REALTIME SEARCH SCRIPT -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const searchInput = document.getElementById('searchInput');
+  const resultsContainer = document.getElementById('resultsContainer');
+  const resetBtn = document.getElementById('resetBtn');
+
+  // Function to load results dynamically
+  function loadResults(query = '') {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', 'alltab.php?search_filename=' + encodeURIComponent(query), true);
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        const parser = new DOMParser();
+        const htmlDoc = parser.parseFromString(xhr.responseText, 'text/html');
+        const newResults = htmlDoc.querySelector('#resultsContainer').innerHTML;
+        resultsContainer.innerHTML = newResults;
+      }
+    };
+    xhr.send();
+  }
+
+  // Realtime search on input
+  searchInput.addEventListener('keyup', function() {
+    const query = this.value.trim();
+    loadResults(query);
+  });
+
+  // Reset button reloads full data
+  resetBtn.addEventListener('click', function() {
+    searchInput.value = '';
+    loadResults('');
+  });
+});
+</script>
